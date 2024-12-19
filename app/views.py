@@ -6,8 +6,6 @@ import requests
 from django.conf import settings
 import xml.etree.ElementTree as ET
 from twilio.twiml.voice_response import VoiceResponse
-from django.http import JsonResponse
-
 
 
 class Home(View):
@@ -78,56 +76,47 @@ class SosPageView(View):
 
 class SosView(View):
     def post(self, request):
-        # Parse the JSON body of the request
-        data = json.loads(request.body)
-
-        # Extract user data and location
-        name = data.get('name', '')
-        phone = data.get('phone', '')
-        address = data.get('address', '')
-        latitude = data.get('latitude', '')
-        longitude = data.get('longitude', '')
+        name = request.COOKIES.get('name', '')
+        phone = request.COOKIES.get('phone', '')
+        address = request.COOKIES.get('address', '')
 
         if phone:
             phone = '+91' + phone[-10:]  # Formatting the phone number to include the country code
 
-        sos_phone_number = '+91' + '6364059064'  # The fixed SOS recipient number
+        sos_phone_number = '+91' + '9686635137'  # The fixed SOS recipient number
 
         # Prepare the custom message for the SMS and the voice call
-        location_message = f"Location: Latitude {latitude}, Longitude {longitude}" if latitude and longitude else "Location not available"
-        message_body = f"User {name} is in trouble! Phone: {phone}. Address: {address}. {location_message}"
+        message_body = f"User {name} is in trouble! Phone: {phone}. Address: {address}"
 
         try:
             client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
 
             # Send SMS to the recipient
-            message = client.messages.create(
+            client.messages.create(
                 body=message_body,
                 from_=settings.TWILIO_PHONE_NUMBER,
                 to=sos_phone_number
             )
 
-            print(f"SMS sent: {message.sid}")
-
-            # Now initiate the voice call
+            # Prepare the TwiML URL (replace with your actual server endpoint)
             try:
-                custom_message = f"Attention! A User named {name} is in trouble! Phone: {phone}. Address: {address}. Location: {location_message}."
+                custom_message = f"Attention! A person {name} is in trouble ! "
 
                 call = client.calls.create(
                     twiml=f'<Response><Say>{custom_message}</Say></Response>',
                     from_=settings.TWILIO_PHONE_NUMBER,  # Your Twilio phone number
-                    to=sos_phone_number  # The recipient's phone number for the call
+                    to="+919686635137"  # The user's phone number
                 )
-
-                print(f"Call initiated: {call.sid}")
-                return JsonResponse({"message": "SOS call and SMS initiated successfully!"})
+                print(f"Call initiated to : {call.sid}")
             except Exception as e:
-                print(f"Error making the call: {e}")
-                return JsonResponse({"error": f"Error making the call: {e}"})
+                print(f"Error making call to : {e}")
 
+            return HttpResponse("SOS call and SMS initiated successfully!")
         except Exception as e:
-            print(f"Error sending the SMS: {e}")
-            return JsonResponse({"error": f"An error occurred while sending the SOS call and SMS: {e}"})
+            return HttpResponse(f"An error occurred while sending the SOS call and SMS: {e}")
+        
+        
+        
 class GDACSMapView(View):
     def get(self, request):
         try:

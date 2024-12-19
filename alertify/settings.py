@@ -38,6 +38,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'django.middleware.csrf.CsrfViewMiddleware',
+
 ]
 
 ROOT_URLCONF = "alertify.urls"
@@ -109,7 +111,8 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
-TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
-TWILIO_PHONE_NUMBER = config('TWILIO_PHONE_NUMBER')
+
+TWILIO_ACCOUNT_SID = 'ACb189207531a3f39d3ea427dbc7d1259e'
+TWILIO_AUTH_TOKEN = '1d7950421508401f2275fb37d318624e'
+TWILIO_PHONE_NUMBER = '+12295159330'
 
