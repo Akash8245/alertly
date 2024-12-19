@@ -16,3 +16,13 @@ class User(models.Model):
 
     def __str__(self):
         return self.name
+
+class Disaster(models.Model):
+    name = models.CharField(max_length=255)  
+    description = models.TextField()  
+    pin_code = models.CharField(max_length=10)  
+    date = models.DateTimeField(auto_now_add=True)  
+    severity = models.CharField(max_length=50, choices=[('Low', 'Low'), ('Medium', 'Medium'), ('High', 'High')]) 
+
+    def __str__(self):
+        return f"{self.name} - {self.pin_code}"

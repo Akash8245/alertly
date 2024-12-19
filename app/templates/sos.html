@@ -1,0 +1,79 @@
+<!-- sos.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS Alert</title>
+    <script>
+        // Function to get the user's current location
+        function getLocationAndSendSOS() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    // Store the location in cookies
+                    document.cookie = "latitude=" + latitude;
+                    document.cookie = "longitude=" + longitude;
+
+                    // Send SOS request with location to the backend
+                    sendSOS(latitude, longitude);
+                }, function(error) {
+                    console.error("Error getting geolocation: ", error);
+                    alert("Could not retrieve your location.");
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Function to send SOS request to the backend with location data
+        function sendSOS(latitude, longitude) {
+            // Collect other user data, e.g., name, phone, address (you can use cookies or form fields)
+            const name = getCookie('name');
+            const phone = getCookie('phone');
+            const address = getCookie('address');
+
+            fetch('/sos/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name,
+                    phone: phone,
+                    address: address,
+                    latitude: latitude,
+                    longitude: longitude
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("SOS sent successfully:", data);
+                alert("SOS sent successfully!");
+            })
+            .catch(error => {
+                console.error("Error sending SOS:", error);
+                alert("Failed to send SOS.");
+            });
+        }
+
+        // Function to get cookie value by name
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+    </script>
+</head>
+<body>
+    <h1>SOS Alert!</h1>
+    <p>Click the button below to send your SOS alert with your name, phone number, address, and current location.</p>
+
+    <!-- SOS Button that triggers getLocationAndSendSOS() -->
+    <button onclick="getLocationAndSendSOS()" style="font-size: 20px; padding: 20px; background-color: red; color: white;">
+        Send SOS
+    </button>
+</body>
+</html>
