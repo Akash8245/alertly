@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse
 from django.views import View
-from .models import User
+from .models import User,Volunteer
 from twilio.rest import Client  
 import requests
 from django.conf import settings
@@ -150,3 +150,42 @@ class GDACSMapView(View):
         except ET.ParseError as e:
             return render(request, 'gdacs_map.html', {'error': f'Error parsing XML: {e}'})
 
+
+# Volenter logic
+class VolunteerView(View):
+    def get(self, request):
+        # Retrieve data from cookies if available
+        name = request.COOKIES.get('name', '')
+        phone = request.COOKIES.get('phone', '')
+        address = request.COOKIES.get('address', '')
+        return render(request, 'volunteer_create.html', {'name': name, 'phone': phone, 'address': address})
+
+    def post(self, request):
+        # Get the volunteer data from the form submission
+        name = request.POST.get('name')
+        phone = request.POST.get('phone')
+        email = request.POST.get('email')
+        address = request.POST.get('address')
+        pin_code = request.POST.get('pin_code')  # Keep the field name as pin_code
+
+        try:
+            # Create a new Volunteer record in the database
+            volunteer = Volunteer.objects.create(
+                name=name,
+                phone=phone,
+                email=email,
+                address=address,
+                pin_code=pin_code  # Use pin_code instead of pincode
+            )
+        
+            # Send a response and store the submitted data in cookies
+            response = HttpResponse("Volunteer details submitted successfully!")
+
+            # Store the data in cookies for future use (e.g., pre-fill the form)
+            response.set_cookie('name', name, max_age=365 * 24 * 60 * 60)  
+            response.set_cookie('phone', phone, max_age=365 * 24 * 60 * 60)  
+            response.set_cookie('address', address, max_age=365 * 24 * 60 * 60)  
+
+            return response
+        except Exception as e:
+            return HttpResponse(f"An error occurred: {e}")
