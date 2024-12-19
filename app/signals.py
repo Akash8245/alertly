@@ -9,7 +9,18 @@ def make_call_on_disaster_creation(sender, instance, created, **kwargs):
     if created:
         # Query Users and Volunteers in the same pin code area separately
         users_in_disaster_area = User.objects.filter(pin_code=instance.pin_code)
-        volunteers_in_disaster_area = Volunteer.objects.filter(pin_code=instance.pin_code)
+        
+        # Treat pin_code as a string and manipulate it accordingly
+        pin_code_str = str(instance.pin_code)
+        surrounding_pins = [
+            pin_code_str,  # Same pin code
+            str(int(pin_code_str) + 1),  # Next pin code
+            str(int(pin_code_str) + 2),  # Two pin codes away
+            str(int(pin_code_str) - 1),  # Previous pin code
+            str(int(pin_code_str) - 2)   # Two pin codes away back
+        ]
+
+        volunteers_in_disaster_area = Volunteer.objects.filter(pin_code__in=surrounding_pins)
 
         client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
 

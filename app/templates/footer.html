@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Footer Design</title>
+  <style>
+    /* Ensure body takes full height */
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Flexbox container to align footer at the bottom */
+    .content-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    /* Main content area */
+    .main-content {
+      flex: 1;
+    }
+
+    /* Footer styling */
+    .footer {
+      background-color: #2a2a2a;
+      color: #f4f4f4;
+      padding: 40px 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .footer-container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+
+    .footer-section {
+      flex: 1;
+      margin: 10px;
+      min-width: 250px;
+    }
+
+    .footer-section h3 {
+      color: #ffffff;
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .footer-section p, .footer-section ul, .footer-section li {
+      font-size: 14px;
+      line-height: 1.8;
+      text-decoration: none !important;
+    }
+
+    .footer-section ul {
+      text-align: center;
+      list-style: none;
+      padding: 0;
+    }
+
+    .footer-section ul li a {
+      color: #b3b3b3;
+      font-size: 15px;
+      text-decoration: none !important;
+      text-align: center;
+      transition: color 0.3s ease, text-decoration 0.3s ease;
+    }
+
+    .footer-section ul li a:hover {
+      color: #f4f4f4;
+      text-decoration: underline;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      border-top: 1px solid #444;
+      padding-top: 10px;
+      color: #b3b3b3;
+    }
+
+    /* Add hover effect for footer section titles */
+    .footer-section h3:hover {
+      color: #49adcc;
+    }
+  </style>
+</head>
+<body>
+  <div class="content-wrapper">
+    <!-- Main content area -->
+    <div class="main-content">
+      <!-- Your page content here -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-container">
+        <div class="footer-section">
+          <h3>About Us</h3>
+          <p>
+            Our project is a disaster alert platform that provides real-time notifications using the GDACS API, with an interactive map, SMS/push alerts, and an SOS button for emergency alerts. Built with Django and JavaScript, it enhances disaster preparedness and safety.          </p>
+        </div>
+
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="/dashboard">Home</a></li>
+            <li><a href="/attendance">Map</a></li>
+            <li><a href="/profile">Sos</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p>Email: support@alertify.com</p>
+          <p>Phone: +91 98765 43210</p>
+          <p>Address: Bangalore</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2024 ATERTIFY. All Rights Reserved.</p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

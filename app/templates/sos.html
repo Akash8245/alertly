@@ -5,15 +5,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SOS Alert</title>
+    <style>
+        /* Body styling to center the content */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        /* Center content vertically and horizontally */
+        .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* height: 100vh; */
+        }
+
+        /* Big round SOS button */
+        .sos-button {
+            margin-top: 20px;
+            padding: 40px ;
+            width: 500px;
+            height: 500px;
+            background-color: red;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* Hover effect for button */
+        .sos-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Ensure the navigation bar is at the top */
+        nav {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <h1>SOS Alert!</h1>
-    <p>Click the button below to send your SOS alert with your name and phone number.</p>
+    <!-- Navigation Bar (Ensure it's at the top) -->
 
-    <!-- SOS Button -->
-    <form action="{% url 'sos' %}" method="POST">
-        {% csrf_token %}
-        <button type="submit" style="font-size: 20px; padding: 20px; background-color: red; color: white;">Send SOS</button>
-    </form>
+    <!-- Main content area -->
+    <div class="content">
+        <!-- SOS Button -->
+        <form action="{% url 'sos' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="sos-button">SOS</button>
+        </form>
+    </div>
 </body>
 </html>
