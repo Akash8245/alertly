@@ -34,7 +34,7 @@ class Home(View):
 
             self.send_call(phone, name)
 
-            response = HttpResponse("Details submitted successfully!")
+            response = render(request,'success.html')
 
             response.set_cookie('name', name, max_age=365 * 24 * 60 * 60)  
             response.set_cookie('phone', phone, max_age=365 * 24 * 60 * 60)  
@@ -45,23 +45,24 @@ class Home(View):
             return HttpResponse(f"An error occurred: {e}")
 
     def send_call(self, phone, name):
-        account_sid = 'AC81abb4fa7b14b37c53ae46719b9d699c'  # Twilio Account SID
-        auth_token = '2c9c321317d7678675f3cb577cfbd8d4'  # Twilio Auth Token
-        from_number = '+12295151239'  # Your Twilio phone number
+        print("hellow")
+        # account_sid = 'AC81abb4fa7b14b37c53ae46719b9d699c'  # Twilio Account SID
+        # auth_token = '2c9c321317d7678675f3cb577cfbd8d4'  # Twilio Auth Token
+        # from_number = '+12295151239'  # Your Twilio phone number
 
-        client = Client(account_sid, auth_token)
+        # client = Client(account_sid, auth_token)
 
-        # You need a URL that returns TwiML (XML) to tell Twilio how to handle the call
-        twiml_url = 'http://your-server.com/voice-response'  # Replace with your URL
+        # # You need a URL that returns TwiML (XML) to tell Twilio how to handle the call
+        # twiml_url = 'http://your-server.com/voice-response'  # Replace with your URL
 
-        # Make a voice call
-        call = client.calls.create(
-            to=phone,
-            from_=from_number,
-            url=twiml_url  # This URL will handle what Twilio says during the call
-        )
+        # # Make a voice call
+        # call = client.calls.create(
+        #     to=phone,
+        #     from_=from_number,
+        #     url=twiml_url  # This URL will handle what Twilio says during the call
+        # )
 
-        print(f"Call initiated to {phone}: {call.sid}")
+        # print(f"Call initiated to {phone}: {call.sid}")
 
 class VoiceResponseView(View):
     def get(self, request):
@@ -76,9 +77,13 @@ class SosPageView(View):
 
 class SosView(View):
     def post(self, request):
-        name = request.COOKIES.get('name', '')
-        phone = request.COOKIES.get('phone', '')
-        address = request.COOKIES.get('address', '')
+        try:
+            name = request.COOKIES.get('name', '')
+            phone = request.COOKIES.get('phone', '')
+            address = request.COOKIES.get('address', '')
+        except:
+            print("Something went wrong !")
+    
 
         if phone:
             phone = '+91' + phone[-10:]  # Formatting the phone number to include the country code
@@ -120,36 +125,47 @@ class SosView(View):
 class GDACSMapView(View):
     def get(self, request):
         try:
+            # Fetch data from GDACS
             response = requests.get('https://www.gdacs.org/xml/rss.xml')
             response.raise_for_status()  # Raise an exception for bad responses
             
-            # Log the response text to check the actual content
-            print(response.text)  # Debug: check the raw response data
-
-            xml_data = response.text  # Get the raw XML data from GDACS
-
+            # Log the raw response text to check the content
+            print("Response from GDACS:")
+            print(response.text)  # This will show the response content in your server logs
+            
             # Parse the XML data to extract relevant info
+            xml_data = response.text
             root = ET.fromstring(xml_data)
+            
             disasters = []
             for item in root.findall('.//item'):
                 title = item.find('title').text
                 description = item.find('description').text
-                coordinates = item.find('geo:lat').text if item.find('geo:lat') is not None else None
+                latitude = item.find('geo:lat').text if item.find('geo:lat') is not None else None
                 longitude = item.find('geo:long').text if item.find('geo:long') is not None else None
-                if coordinates and longitude:
-                    disasters.append({
-                        'title': title,
-                        'description': description,
-                        'latitude': coordinates,
-                        'longitude': longitude,
-                    })
 
+                # Convert latitude and longitude to float and only append if both are valid
+                if latitude and longitude:
+                    try:
+                        latitude = float(latitude)
+                        longitude = float(longitude)
+                        disasters.append({
+                            'title': title,
+                            'description': description,
+                            'latitude': latitude,
+                            'longitude': longitude,
+                        })
+                    except ValueError:
+                        continue  # Skip if latitude or longitude cannot be converted to float
+
+            # Render the map page with disaster data
             return render(request, 'gdacs_map.html', {'disasters': disasters})
         except requests.RequestException as e:
+            # Handle request errors (e.g., network issues, invalid URL)
             return render(request, 'gdacs_map.html', {'error': f'Error fetching GDACS data: {e}'})
         except ET.ParseError as e:
-            return render(request, 'gdacs_map.html', {'error': f'Error parsing XML: {e}'})
-
+            # Handle XML parsing errors
+            return render(request, 'gdacs_map.html', {'error': f'Error parsing GDACS XML data: {e}'})
 
 # Volenter logic
 class VolunteerView(View):
@@ -179,7 +195,7 @@ class VolunteerView(View):
             )
         
             # Send a response and store the submitted data in cookies
-            response = HttpResponse("Volunteer details submitted successfully!")
+            response = render(request,'success.html')
 
             # Store the data in cookies for future use (e.g., pre-fill the form)
             response.set_cookie('name', name, max_age=365 * 24 * 60 * 60)  
